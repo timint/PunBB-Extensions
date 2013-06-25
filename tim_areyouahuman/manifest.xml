@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE extension SYSTEM "ext-1.0.dtd">
+
+<extension engine="1.0">
+	<id>tim_areyouahuman</id>
+	<title>Are You A Human?</title>
+	<version>1.0</version>
+	<description>Human verification through areyouahuman.com</description>
+	<author>info@tim-international.net</author>
+
+	<minversion>1.4RC1</minversion>
+	<maxtestedon>1.4.2</maxtestedon>
+
+	<hooks>
+  
+		<hook id="rg_start"><![CDATA[
+if (!isset($tim_areyouahuman_lang)) {
+  if (file_exists($ext_info['path'].'/lang/'.$forum_user['language'].'/lang.php')) {
+    require $ext_info['path'].'/lang/'.$forum_user['language'].'/lang.php';
+  } else {
+    require $ext_info['path'].'/lang/English/lang.php';
+  }
+}
+    ]]></hook>
+    
+    <hook id="rg_register_end_validation"><![CDATA[
+    require_once($ext_info['path'].'/ayah_php_bundle_1.1.8/ayah.php');
+    $ayah = new AYAH();
+    if (!$ayah->scoreResult()) {
+      $errors[] = $tim_areyouahuman_lang['ayah_failed'];
+    }
+		]]></hook>
+  
+		<hook id="rg_register_group_end"><![CDATA[
+    ?>
+				<div class="sf-set set<?php echo ++$forum_page['item_count'] ?>">
+					<div class="sf-box text required">
+						<label for="fld<?php echo ++$forum_page['fld_count'] ?>"><span></span></label><br />
+<?php
+  // Use the AYAH object to get the HTML code needed to load and run the PlayThru.
+  require_once($ext_info['path'].'/ayah_php_bundle_1.1.8/ayah.php');
+  $ayah = new AYAH();
+  echo $ayah->getPublisherHTML();
+?>
+					</div>
+				</div>
+<?php
+		]]></hook>
+	</hooks>
+</extension>
